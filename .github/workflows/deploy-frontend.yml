@@ -16,10 +16,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Using Node 20 (LTS) to guarantee compatibility with Expo bundlers
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
 
       - name: Cache Node Modules
         uses: actions/cache@v4
