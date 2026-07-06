@@ -40,12 +40,14 @@ jobs:
           cd apps/mobile
           npx expo export
 
+      # Use standard Firebase Action but deploy using token and dynamic project override
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@v2.2.0
         with:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || 'lifecoach-prod' }}
 
       - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
