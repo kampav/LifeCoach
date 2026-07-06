@@ -10,14 +10,11 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.kampav.lifecoach",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
-      },
-      "predictiveBackGestureEnabled": false,
-      "package": "com.kampav.LifeCoach"
+        "backgroundColor": "#000000"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

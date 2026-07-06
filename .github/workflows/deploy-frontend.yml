@@ -21,6 +21,13 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Caches npm dependencies to speed up the pipeline
       - name: Cache Node Modules
         uses: actions/cache@v4
         with:
@@ -28,6 +35,17 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('apps/mobile/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+
+      # Caches Gradle build configurations to optimize compilation runs
+      - name: Cache Gradle Packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('apps/mobile/android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Install Dependencies
         run: |
@@ -39,8 +57,7 @@ jobs:
           cd apps/mobile
           npx expo export
 
-      # Use standard Firebase Action but deploy using token and fallback project target
-      - name: Deploy to Firebase Hosting
+      - name: Deploy PWA to Firebase Hosting
         uses: w9jds/firebase-action@v2.2.0
         with:
           args: deploy --only hosting
@@ -48,15 +65,22 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
 
-      - name: Setup EAS CLI
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Trigger Android APK Preview Build
+      # Generates native /android project structures on-the-fly inside the runner
+      - name: Generate Native Android Directory
         run: |
           cd apps/mobile
-          npx eas-cli build --platform android --profile preview --non-interactive
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          npx expo prebuild --platform android --no-install
+
+      # Compiles release APK directly on the GitHub Runner (zero queue delays)
+      - name: Build Android APK
+        run: |
+          cd apps/mobile/android
+          ./gradlew assembleRelease --no-daemon
+
+      # Uploads compiled APK as a direct download link on your Actions run page
+      - name: Upload Android APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-APK
+          path: apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
