@@ -16,7 +16,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Using Node 20 (LTS) to guarantee compatibility with Expo bundlers
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -40,14 +39,14 @@ jobs:
           cd apps/mobile
           npx expo export
 
-      # Use standard Firebase Action but deploy using token and dynamic project override
+      # Use standard Firebase Action but deploy using token and fallback project target
       - name: Deploy to Firebase Hosting
         uses: w9jds/firebase-action@v2.2.0
         with:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || 'lifecoach-prod' }}
+          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
 
       - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
