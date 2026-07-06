@@ -1,4 +1,4 @@
-name: Deploy Frontend (Web PWA & Android APK)
+﻿name: Deploy Frontend (Web PWA & Android APK)
 
 on:
   push:
@@ -27,26 +27,7 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # Caches npm dependencies to speed up the pipeline
-      - name: Cache Node Modules
-        uses: actions/cache@v4
-        with:
-          path: apps/mobile/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('apps/mobile/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      # Caches Gradle build configurations to optimize compilation runs
-      - name: Cache Gradle Packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('apps/mobile/android/gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
+      # Temporarily disable caches to force clean, uncorrupted npm trees
       - name: Install Dependencies
         run: |
           cd apps/mobile
@@ -65,19 +46,19 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
 
-      # Generates native /android project structures on-the-fly inside the runner
+      # Run prebuild with clean flag to delete stale files
       - name: Generate Native Android Directory
         run: |
           cd apps/mobile
-          npx expo prebuild --platform android
+          npx expo prebuild --platform android --clean
 
-      # Compiles release APK directly on the GitHub Runner (zero queue delays)
+      # Compile release APK
       - name: Build Android APK
         run: |
           cd apps/mobile/android
           ./gradlew assembleRelease --no-daemon
 
-      # Uploads compiled APK as a direct download link on your Actions run page
+      # Upload compiled APK
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
