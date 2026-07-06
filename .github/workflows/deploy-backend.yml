@@ -1,0 +1,45 @@
+﻿name: Deploy Backend to GCP Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        if: env.GCP_SA_KEY != ''
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        if: env.GCP_SA_KEY != ''
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and Push Docker Image
+        if: env.GCP_SA_KEY != ''
+        run: |
+          gcloud auth configure-docker --quiet
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/lifecoach-backend:latest ./backend
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/lifecoach-backend:latest
+
+      - name: Deploy to Cloud Run
+        if: env.GCP_SA_KEY != ''
+        run: |
+          gcloud run deploy lifecoach-backend \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/lifecoach-backend:latest \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --max-instances 3 \
+            --min-instances 0 \
+            --memory 256Mi
