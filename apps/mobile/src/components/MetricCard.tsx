@@ -1,8 +1,7 @@
-import React from "react";
+﻿import React from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Colors } from "../theme/tokens";
 import type { MetricDefinition } from "../shared/types";
-import { Check, X } from "lucide-react-native";
 
 interface MetricCardProps {
   metric: MetricDefinition;
@@ -26,11 +25,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({ metric, isWon, onPress }
           <Text style={styles.pillar}>{metric.pillar.toUpperCase()}</Text>
         </View>
         <View style={[styles.indicator, { backgroundColor: isWon ? Colors.win : Colors.surface3 }]}>
-          {isWon ? (
-            <Check size={14} color="#000000" strokeWidth={3} />
-          ) : (
-            <X size={12} color={Colors.textSecondary} strokeWidth={2.5} />
-          )}
+          <Text style={{ fontSize: 10, color: isWon ? "#000000" : Colors.textSecondary, fontWeight: "bold" }}>
+            {isWon ? "✔" : "✘"}
+          </Text>
         </View>
       </View>
       <Text style={styles.definition}>{metric.definition}</Text>

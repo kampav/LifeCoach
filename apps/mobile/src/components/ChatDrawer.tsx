@@ -1,7 +1,6 @@
-import React, { useState, useRef } from "react";
+﻿import React, { useState, useRef } from "react";
 import { View, Text, TextInput, ScrollView, Pressable, StyleSheet, ActivityIndicator } from "react-native";
 import { Colors } from "../theme/tokens";
-import { Send, Sparkles } from "lucide-react-native";
 import { useCoachStore } from "../store/coachStore";
 import { GeminiService } from "../services/GeminiService";
 import type { ChatMessage } from "../shared/types";
@@ -28,7 +27,6 @@ export const ChatDrawer: React.FC = () => {
     setInput("");
     setChatLoading(true);
     
-    // Auto-scroll layout
     setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
 
     try {
@@ -67,7 +65,7 @@ export const ChatDrawer: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Sparkles size={16} color={Colors.violet} />
+        <Text style={{ fontSize: 13, marginRight: 6 }}>✨</Text>
         <Text style={styles.headerTitle}>AI SYSTEM INTERFACE</Text>
       </View>
       <ScrollView 
@@ -107,7 +105,7 @@ export const ChatDrawer: React.FC = () => {
           onSubmitEditing={sendMessage}
         />
         <Pressable onPress={sendMessage} style={styles.sendButton}>
-          <Send size={16} color="#000000" />
+          <Text style={{ fontSize: 13, color: "#000000" }}>➡️</Text>
         </Pressable>
       </View>
     </View>
@@ -119,7 +117,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface0,
     borderTopWidth: 1,
     borderColor: Colors.border,
-    height: 320,
+    height: 240,
     padding: 16,
   },
   header: {
@@ -132,7 +130,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: Colors.textSecondary,
     fontWeight: "800",
-    marginLeft: 8,
     letterSpacing: 1.5,
   },
   msgContainer: {
@@ -145,7 +142,7 @@ const styles = StyleSheet.create({
   empty: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 40,
+    paddingVertical: 10,
   },
   emptyText: {
     color: Colors.textDisabled,

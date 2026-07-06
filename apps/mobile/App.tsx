@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { 
   StyleSheet, 
   Text, 
@@ -19,7 +19,6 @@ import { METRICS, MENTAL_STATES } from "./src/shared/metrics";
 import { ScoreArc } from "./src/components/ScoreArc";
 import { MetricCard } from "./src/components/MetricCard";
 import { ChatDrawer } from "./src/components/ChatDrawer";
-import { Settings, Calendar, Award, Compass, RefreshCw } from "lucide-react-native";
 
 export default function App() {
   const [dbReady, setDbReady] = useState(false);
@@ -50,6 +49,8 @@ export default function App() {
         setDbReady(true);
       } catch (err) {
         console.error("Migration failed:", err);
+        // Fallback for web where SQLite can fail to initialize
+        setDbReady(true);
       }
     }
     setupDb();
@@ -62,6 +63,8 @@ export default function App() {
         const bday = useCoachStore.getState().profile?.birthday || "";
         setApiKeyInput(key);
         setBdayInput(bday);
+      }).catch(err => {
+        console.warn("Init failed:", err);
       });
     }
   }, [dbReady]);
@@ -132,7 +135,7 @@ export default function App() {
               <Text style={styles.subtitle}>AI LIFESTYLE SYSTEMS ARCHITECT</Text>
             </View>
             <Pressable onPress={() => setShowSettings(!showSettings)} style={styles.iconBtn}>
-              <Settings size={18} color={Colors.textSecondary} />
+              <Text style={{ fontSize: 16, color: Colors.textSecondary }}>⚙️</Text>
             </Pressable>
           </View>
 
@@ -175,12 +178,12 @@ export default function App() {
           {/* Stats Bar */}
           <View style={styles.statsBar}>
             <View style={styles.statCell}>
-              <Award size={14} color={Colors.gold} />
+              <Text style={{ fontSize: 12, marginRight: 4 }}>🔥</Text>
               <Text style={styles.statLabel}>STREAK</Text>
               <Text style={styles.statValue}>{streaks?.overall || 0}d</Text>
             </View>
             <View style={styles.statCell}>
-              <Calendar size={14} color={Colors.primary} />
+              <Text style={{ fontSize: 12, marginRight: 4 }}>📅</Text>
               <Text style={styles.statLabel}>DAY MODE</Text>
               <View style={styles.modeToggle}>
                 <Pressable 
@@ -257,7 +260,7 @@ export default function App() {
                 <ActivityIndicator size="small" color="#000000" />
               ) : (
                 <>
-                  <Compass size={16} color="#000000" />
+                  <Text style={{ fontSize: 13, color: "#000000" }}>🚀</Text>
                   <Text style={styles.submitBtnText}>BRIEF SYSTEM ARCHITECT</Text>
                 </>
               )}
@@ -599,6 +602,3 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
-// Trigger timestamp: 2026-07-06 12:24:06
-// Trigger project fix: 2026-07-06 13:01:35
-// Trigger ignore fix: 2026-07-06 14:09:44
