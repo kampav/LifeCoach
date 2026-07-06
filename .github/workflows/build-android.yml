@@ -1,4 +1,4 @@
-﻿name: Deploy Frontend (Web PWA & Android APK)
+﻿name: Build Android APK
 
 on:
   push:
@@ -7,10 +7,10 @@ on:
     paths:
       - 'apps/mobile/**'
       - 'packages/shared/**'
-      - '.github/workflows/deploy-frontend.yml'
+      - '.github/workflows/build-android.yml'
 
 jobs:
-  build-and-deploy:
+  build-apk:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -27,38 +27,21 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # Temporarily disable caches to force clean, uncorrupted npm trees
       - name: Install Dependencies
         run: |
           cd apps/mobile
           npm install --legacy-peer-deps
 
-      - name: Build Web App (PWA)
-        run: |
-          cd apps/mobile
-          npx expo export
-
-      - name: Deploy PWA to Firebase Hosting
-        uses: w9jds/firebase-action@v2.2.0
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-
-      # Run prebuild with clean flag to delete stale files
       - name: Generate Native Android Directory
         run: |
           cd apps/mobile
           npx expo prebuild --platform android --clean
 
-      # Compile release APK
       - name: Build Android APK
         run: |
           cd apps/mobile/android
           ./gradlew assembleRelease --no-daemon
 
-      # Upload compiled APK
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
         with:
