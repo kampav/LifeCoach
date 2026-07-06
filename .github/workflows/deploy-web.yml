@@ -1,4 +1,4 @@
-﻿name: Deploy Web App (PWA)
+name: Deploy Web App (PWA)
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
       - name: Build Web App (PWA)
         run: |
           cd apps/mobile
-          npx expo export
+          npx expo export --platform web
 
       - name: Deploy PWA to Firebase Hosting
         uses: w9jds/firebase-action@v2.2.0
