@@ -17,6 +17,7 @@
       }
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
     "extra": {
@@ -24,6 +25,15 @@
         "projectId": "ab7a7c51-14da-4cac-bf2e-589931670802"
       }
     },
-    "owner": "kampav"
+    "owner": "kampav",
+    "plugins": [
+      "expo-sqlite",
+      "expo-status-bar"
+    ],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ]
   }
 }
